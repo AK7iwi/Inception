@@ -1,12 +1,25 @@
 #!/bin/bash
-service mysql start;
+if ! [ -e "/var/lib/mysql/first_config_db_done" ]
+then
+	echo "Creating the files change_root.sql and config_db.sql"
+	echo "ALTER USER 'root'@'localhost' IDENTIFIED BY '$MARIADB_ROOT_PASSWORD';" >> /var/lib/mysql/change_root.sql
+	echo "FLUSH PRIVILEGES;" >> /var/lib/mysql/change_root.sql
+	echo "CREATE USER IF NOT EXISTS '$MARIADB_USER'@'%' IDENTIFIED BY '$MARIADB_PASSWORD';" > /var/lib/mysql/config_db.sql
+	echo "CREATE DATABASE IF NOT EXISTS $MARIADB_DATABASE;" >> /var/lib/mysql/config_db.sql
+	echo "GRANT ALL PRIVILEGES ON $MARIADB_DATABASE.* TO '$MARIADB_USER'@'%' IDENTIFIED BY '$MARIADB_PASSWORD';"  >> /var/lib/mysql/config_db.sql
+	echo "FLUSH PRIVILEGES;" >> /var/lib/mysql/config_db.sql
 
-mysql -u root -p${SQL_ROOT_PASSWORD} -e "CREATE DATABASE IF NOT EXISTS \`${SQL_DATABASE_NAME}\`;"
-mysql -u root -p${SQL_ROOT_PASSWORD} -e "CREATE USER IF NOT EXISTS \`${SQL_USER}\`@'localhost' IDENTIFIED BY '${SQL_PASSWORD}';"
-mysql -u root -p${SQL_ROOT_PASSWORD} -e "GRANT ALL PRIVILEGES ON \`${SQL_DATABASE_NAME}\`.* TO \`${SQL_USER}\`@'%' IDENTIFIED BY '${SQL_PASSWORD}';"
-mysql -u root -p${SQL_ROOT_PASSWORD} -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '${SQL_ROOT_PASSWORD}';"
-mysql -u root -p${SQL_ROOT_PASSWORD} -e "FLUSH PRIVILEGES;"
+	service mariadb start
 
-mysqladmin -u root -p${SQL_ROOT_PASSWORD} shutdown
+	sleep 5
 
-exec mysqld_safe
+	mariadb -u root < /var/lib/mysql/config_db.sql
+	mariadb -u root < /var/lib/mysql/change_root.sql
+
+	mariadb-admin --user=root --password=$MARIADB_ROOT_PASSWORD shutdown
+
+	rm /var/lib/mysql/change_root.sql /var/lib/mysql/config_db.sql
+	touch /var/lib/mysql/first_config_db_done
+fi
+
+exec mysqld_safe;
