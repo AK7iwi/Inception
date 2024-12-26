@@ -3,7 +3,7 @@ FROM	debian:bullseye
 # Update and install necessary packages
 RUN	apt-get update -y && apt-get upgrade -y
 RUN	apt-get install -y wget \
-	php php7.4 php-fpm php-mysql php-common php-cgi php-cli mariadb-client
+	php7.4 php-fpm php-mysql php-common php-cgi php-cli mariadb-client
 
 # Create /run/php directory to fix the PID file issue
 RUN mkdir -p /run/php && chown -R www-data:www-data /run/php
