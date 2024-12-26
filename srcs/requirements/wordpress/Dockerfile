@@ -2,7 +2,7 @@ FROM	debian:bullseye
 
 RUN	apt-get update -y && apt-get upgrade -y
 RUN	apt-get install -y wget
-RUN	apt-get install -y php7.4 php-fpm php-mysql php-common php-cgi php-cli mariadb-client
+RUN	apt-get install -y php php7.4 php-fpm php-mysql php-common php-cgi php-cli mariadb-client
 
 RUN	wget https://fr.wordpress.org/wordpress-6.2.2-fr_FR.tar.gz -P /var/www
 RUN	tar -xzf /var/www/wordpress-6.2.2-fr_FR.tar.gz -C /var/www/.
