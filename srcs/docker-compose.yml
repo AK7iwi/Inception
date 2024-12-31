@@ -77,6 +77,5 @@ volumes:
       device: '/home/mfeldman/data/wordpress'
 networks:
   inception:
-    name: inception
     driver: bridge
 
