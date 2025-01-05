@@ -12,7 +12,7 @@ services:
     networks:
       - inception
     restart: unless-stopped
-    env_file: .env
+    env_file: ../.env
     healthcheck:
       test: mysqladmin ping --host=localhost -p${MARIADB_ROOT_PASSWORD}
       interval: 5s
@@ -36,7 +36,7 @@ services:
     depends_on:
       mariadb:
         condition: service_healthy
-    env_file: .env
+    env_file: ../.env
 
   nginx:
     image: nginx:1.0
@@ -53,7 +53,7 @@ services:
     networks:
       - inception
     restart: unless-stopped
-    env_file: .env
+    env_file: ../.env
     healthcheck:
       test: 'curl -kfsSL https://localhost:443'
       interval: 5s
